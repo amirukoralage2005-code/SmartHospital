@@ -2,6 +2,32 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define MAX_PATIENTS 100
+#define TOTAL_SPECIALTIES 4
+#define TOTAL_WARDS 4
+
+const char *specialtyTitles[TOTAL_SPECIALTIES] = {
+    "General Practice (OPD)",
+    "Paediatrics",
+    "Cardiology",
+    "Neurology"
+};
+
+const double specialtyRates[TOTAL_SPECIALTIES] = {1500.00,2500.00,4500.00,5000.00};
+
+const int consultationDurations[TOTAL_SPECIALTIES] = {15,20,30,30};
+
+const char *wardTitles[TOTAL_WARDS] = {
+    "General Ward",
+    "Paediatric Ward",
+    "Surgical Ward",
+    "ICU (Intensive Care Unit)"
+};
+
+const double wardDailyRates[TOTAL_WARDS] = {3000.00,6000.00,12000.00,25000.00};
+
+const int wardBedLimits[TOTAL_WARDS] = {20,10,10,5};
+
 void displayMenu() {
     printf("\n============================================\n");
     printf("   SMART HOSPITAL & RESOURCE ALLOCATION     \n");
