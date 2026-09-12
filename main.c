@@ -72,6 +72,26 @@ void initializeBedOccupancy() {
             bedOccupancy[w][b] = 0;
 }
 
+
+void displayLookupData() {
+    int i;
+    printf("\n---------------- DOCTOR SPECIALTIES ----------------\n");
+    printf("%-4s %-25s %-15s %-15s %-10s\n", "ID", "Specialty Name", "Fee (LKR)", "Time/Patient", "Daily Cap");
+    for (i = 0; i < TOTAL_SPECIALTIES; i++) {
+        printf("%-4d %-25s %-15.2f %-15d %-10d\n",
+               i + 1, specialtyTitles[i], specialtyRates[i], consultationDurations[i], specialtyDailyCap[i]);
+    }
+
+    printf("\n------------------ HOSPITAL WARDS ------------------\n");
+    printf("%-4s %-25s %-18s %-12s\n", "ID", "Ward Name", "Daily Rate (LKR)", "Capacity");
+    for (i = 0; i < TOTAL_WARDS; i++) {
+        printf("%-4d %-25s %-18.2f %-12d\n",
+               i + 1, wardTitles[i], wardDailyRates[i], wardBedLimits[i]);
+    }
+}
+
+
+
 int main()
 {
     int choice;
@@ -86,7 +106,7 @@ int main()
 
         switch (choice) {
             case 1:
-                printf("\nLookup Data\n");
+                displayLookupData();
                 break;
             case 2:
                 printf("\nIntake & Registration\n");
@@ -107,3 +127,4 @@ int main()
 
     return 0;
 }
+
