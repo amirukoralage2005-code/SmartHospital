@@ -73,7 +73,7 @@ void initializeBedOccupancy() {
 }
 
 
-void displayLookupData(void) {
+void displayLookupData() {
     int i;
     printf("\n---------------- DOCTOR SPECIALTIES ----------------\n");
     printf("%-4s %-25s %-15s %-15s %-10s\n", "ID", "Specialty Name", "Fee (LKR)", "Time/Patient", "Daily Cap");
