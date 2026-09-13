@@ -90,7 +90,21 @@ void displayLookupData() {
     }
 }
 
-
+void displayBedOccupancy(void) {
+    int w, b, occupied;
+    printf("\n------------------ BED OCCUPANCY --------------------\n");
+    for (w = 0; w < TOTAL_WARDS; w++) {
+        occupied = 0;
+        printf("\n%s (Capacity: %d)\n[ ", wardTitles[w], wardBedLimits[w]);
+        for (b = 0; b < wardBedLimits[w]; b++) {
+            printf("%s ", bedOccupancy[w][b] == 1 ? "O" : "A");
+            if (bedOccupancy[w][b] == 1) occupied++;
+        }
+        printf("]\n");
+        printf("Occupied: %d / %d  |  Available: %d\n", occupied, wardBedLimits[w], wardBedLimits[w] - occupied);
+    }
+    printf("(A = Available, O = Occupied)\n");
+}
 
 int main()
 {
@@ -107,6 +121,7 @@ int main()
         switch (choice) {
             case 1:
                 displayLookupData();
+                displayBedOccupancy();
                 break;
             case 2:
                 printf("\nIntake & Registration\n");
