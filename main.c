@@ -141,6 +141,55 @@ void saveBedStatus() {
     fclose(fp);
 }
 
+int getValidatedInt(const char *prompt, int min, int max) {
+    int value;
+
+    while (1) {
+        printf("%s", prompt);
+
+        if (scanf("%d", &value) == 1) {
+            if (value >= min && value <= max)
+                return value;
+
+            printf("Please enter a value between %d and %d.\n", min, max);
+        } else {
+            printf("Invalid input! Please enter a whole number.\n");
+        }
+
+        while (getchar() != '\n');
+    }
+}
+
+void getValidatedString(const char *prompt, char *buffer, int size) {
+    size_t len;
+
+    while (getchar() != '\n');
+
+    do {
+        printf("%s", prompt);
+        fgets(buffer, size, stdin);
+
+        len = strlen(buffer);
+
+        if (buffer[len - 1] == '\n') {
+            buffer[len - 1] = '\0';
+            len--;
+        }
+
+        if (len == 0)
+            printf("Input cannot be empty.\n");
+
+    } while (len == 0);
+}
+
+const char *urgencyText(int level) {
+    switch (level) {
+        case 1: return "Normal";
+        case 2: return "Urgent";
+        default: return "Critical";
+    }
+}
+
 int main()
 {
     int choice;
