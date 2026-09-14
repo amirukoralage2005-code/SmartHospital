@@ -106,11 +106,47 @@ void displayBedOccupancy(void) {
     printf("(A = Available, O = Occupied)\n");
 }
 
+void loadBedStatus() {
+    FILE *fp = fopen("beds_status.txt", "r");
+    int w, b;
+
+    if (fp == NULL) {
+        return;
+    }
+
+    for (w = 0; w < TOTAL_WARDS; w++) {
+        for (b = 0; b < MAX_BEDS; b++) {
+            fscanf(fp, "%d", &bedOccupancy[w][b]);
+        }
+    }
+    fclose(fp);
+    printf("\n[Bed occupancy status loaded from beds_status.txt]\n");
+}
+
+void saveBedStatus() {
+    FILE *fp = fopen("beds_status.txt", "w");
+    int w, b;
+
+    if (fp == NULL) {
+        printf("\nError: could not save bed status.\n");
+        return;
+    }
+
+    for (w = 0; w < TOTAL_WARDS; w++) {
+        for (b = 0; b < MAX_BEDS; b++) {
+            fprintf(fp, "%d ", bedOccupancy[w][b]);
+        }
+        fprintf(fp, "\n");
+    }
+    fclose(fp);
+}
+
 int main()
 {
     int choice;
     
     initializeBedOccupancy();
+    loadBedStatus();
 
     do {
         displayMenu();
@@ -133,7 +169,8 @@ int main()
                 printf("\nAnalytics Report\n");
                 break;
             case 5:
-                printf("Exiting system...\n");
+                saveBedStatus();
+                printf("Bed status saved. Exiting system...\n");
                 break;
             default:
                 printf("\nInvalid selection! Choice must be between 1 and 5.\n");
