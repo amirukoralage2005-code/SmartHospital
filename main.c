@@ -190,6 +190,22 @@ const char *urgencyText(int level) {
     }
 }
 
+void registerPatient() {
+    int idx = patientCount;
+
+    if (patientCount >= MAX_PATIENTS) {
+        printf("\nPatient records are full. Cannot register more patients.\n");
+        return;
+    }
+
+    printf("\n---------------- PATIENT REGISTRATION ----------------\n");
+
+    getValidatedString("Enter Patient Name: ", patientNames[idx], NAME_LEN);
+    patientAges[idx] = getValidatedInt("Enter Patient Age: ", 0, 120);
+    patientUrgency[idx] = getValidatedInt("Enter Urgency Level (1-Normal, 2-Urgent, 3-Critical): ", 1, 3);
+}
+
+
 int main()
 {
     int choice;
@@ -209,7 +225,7 @@ int main()
                 displayBedOccupancy();
                 break;
             case 2:
-                printf("\nIntake & Registration\n");
+                registerPatient();
                 break;
             case 3:
                 printf("\nPatient Priority Waiting Queue\n");
@@ -228,4 +244,3 @@ int main()
 
     return 0;
 }
-
