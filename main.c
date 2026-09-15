@@ -190,8 +190,13 @@ const char *urgencyText(int level) {
     }
 }
 
+double calculateWaitTime(int specialtyIndex) {
+    return specialtyQueueCount[specialtyIndex] * consultationDurations[specialtyIndex];
+}
+
 void registerPatient() {
     int idx = patientCount;
+    int specialtyIdx, i;
 
     if (patientCount >= MAX_PATIENTS) {
         printf("\nPatient records are full. Cannot register more patients.\n");
@@ -203,8 +208,18 @@ void registerPatient() {
     getValidatedString("Enter Patient Name: ", patientNames[idx], NAME_LEN);
     patientAges[idx] = getValidatedInt("Enter Patient Age: ", 0, 120);
     patientUrgency[idx] = getValidatedInt("Enter Urgency Level (1-Normal, 2-Urgent, 3-Critical): ", 1, 3);
-}
+    
+    printf("\nAvailable Specialties:\n");
+    for (i = 0; i < TOTAL_SPECIALTIES; i++)
+        printf("  %d. %s\n", i + 1, specialtyTitles[i]);
 
+    specialtyIdx = getValidatedInt("Select Specialty ID: ", 1, TOTAL_SPECIALTIES) - 1;
+    patientSpecialty[idx] = specialtyIdx + 1;
+    patientWaitTime[idx] = calculateWaitTime(specialtyIdx);
+    specialtyQueueCount[specialtyIdx]++;
+
+    patientCount++;
+}
 
 int main()
 {
@@ -244,3 +259,4 @@ int main()
 
     return 0;
 }
+
