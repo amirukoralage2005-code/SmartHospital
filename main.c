@@ -194,9 +194,19 @@ double calculateWaitTime(int specialtyIndex) {
     return specialtyQueueCount[specialtyIndex] * consultationDurations[specialtyIndex];
 }
 
+int findAvailableBed(int wardIndex) {
+    int b;
+    for (b = 0; b < wardBedLimits[wardIndex]; b++) {
+        if (bedOccupancy[wardIndex][b] == 0) {
+            return b;
+        }
+    }
+    return -1;
+}
+
 void registerPatient() {
     int idx = patientCount;
-    int specialtyIdx, i;
+    int specialtyIdx,wardIdx = -1, bedIdx = -1, i;
 
     if (patientCount >= MAX_PATIENTS) {
         printf("\nPatient records are full. Cannot register more patients.\n");
@@ -217,6 +227,35 @@ void registerPatient() {
     patientSpecialty[idx] = specialtyIdx + 1;
     patientWaitTime[idx] = calculateWaitTime(specialtyIdx);
     specialtyQueueCount[specialtyIdx]++;
+    
+    patientAdmitted[idx] = getValidatedInt("Is Patient Admitted to a Ward? (1-Yes, 0-No): ", 0, 1);
+
+    if (patientAdmitted[idx] == 1) {
+        printf("\nAvailable Wards:\n");
+        for (i = 0; i < TOTAL_WARDS; i++)
+            printf("  %d. %s\n", i + 1, wardTitles[i]);
+
+        wardIdx = getValidatedInt("Select Ward ID: ", 1, TOTAL_WARDS) - 1;
+        patientDays[idx] = getValidatedInt("Enter Number of Days Admitted: ", 1, 365);
+
+        bedIdx = findAvailableBed(wardIdx);
+        if (bedIdx == -1) {
+            printf("\nSorry, %s has no available beds right now.\n", wardTitles[wardIdx]);
+            printf("Patient will be registered as Outpatient (OPD) instead.\n");
+            patientAdmitted[idx] = 0;
+            patientWard[idx] = 0;
+            patientDays[idx] = 0;
+            patientBed[idx] = 0;
+        } else {
+            bedOccupancy[wardIdx][bedIdx] = 1;
+            patientWard[idx] = wardIdx + 1;
+            patientBed[idx] = bedIdx + 1;
+        }
+    } else {
+        patientWard[idx] = 0;
+        patientDays[idx] = 0;
+        patientBed[idx] = 0;
+    }
 
     patientCount++;
 }
@@ -259,4 +298,3 @@ int main()
 
     return 0;
 }
-
