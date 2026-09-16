@@ -204,6 +204,22 @@ int findAvailableBed(int wardIndex) {
     return -1;
 }
 
+double calculateSurcharge(int urgency, double baseFee) {
+    if (urgency == 2) return baseFee * 0.20;
+    if (urgency == 3) return baseFee * 0.50;
+    return 0.0;
+}
+
+double calculateWardCost(int admitted, int wardIndex, int days) {
+    if (admitted == 0) return 0.0;
+    return wardDailyRates[wardIndex] * days;
+}
+
+double calculateDiscount(int age, double grossTotal) {
+    if (age < 5 || age > 65) return grossTotal * 0.15;
+    return 0.0;
+}
+
 void registerPatient() {
     int idx = patientCount;
     int specialtyIdx,wardIdx = -1, bedIdx = -1, i;
@@ -256,6 +272,13 @@ void registerPatient() {
         patientDays[idx] = 0;
         patientBed[idx] = 0;
     }
+    
+    patientBaseFee[idx]    = specialtyRates[specialtyIdx];
+    patientSurcharge[idx]  = calculateSurcharge(patientUrgency[idx], patientBaseFee[idx]);
+    patientWardCost[idx]   = calculateWardCost(patientAdmitted[idx], patientWard[idx] - 1, patientDays[idx]);
+    patientGrossTotal[idx] = patientBaseFee[idx] + patientSurcharge[idx] + patientWardCost[idx];
+    patientDiscount[idx]   = calculateDiscount(patientAges[idx], patientGrossTotal[idx]);
+    patientFinalAmount[idx]= patientGrossTotal[idx] - patientDiscount[idx];
 
     patientCount++;
 }
@@ -298,3 +321,4 @@ int main()
 
     return 0;
 }
+
