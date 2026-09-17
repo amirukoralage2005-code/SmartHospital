@@ -278,6 +278,37 @@ void savePatientRecordToFile(int idx) {
     fclose(fp);
 }
 
+void sortAndDisplayPriorityQueue() {
+    int order[MAX_PATIENTS];
+    int i, j, temp;
+
+    if (patientCount == 0) {
+        printf("\nNo patients registered yet.\n");
+        return;
+    }
+
+    for (i = 0; i < patientCount; i++) order[i] = i;
+
+    for (i = 0; i < patientCount - 1; i++) {
+        for (j = 0; j < patientCount - 1 - i; j++) {
+            if (patientUrgency[order[j]] < patientUrgency[order[j + 1]]) {
+                temp = order[j];
+                order[j] = order[j + 1];
+                order[j + 1] = temp;
+            }
+        }
+    }
+
+    printf("\n------------- PATIENT PRIORITY WAITING QUEUE -------------\n");
+    printf("%-4s %-10s %-20s %-10s %-20s %-12s\n", "Pos", "Pat.ID", "Name", "Urgency", "Specialty", "Final(LKR)");
+    for (i = 0; i < patientCount; i++) {
+        int p = order[i];
+        printf("%-4d PAT-%-6d %-20s %-10s %-20s %-12.2f\n",
+               i + 1, 1000 + p + 1, patientNames[p], urgencyText(patientUrgency[p]),
+               specialtyTitles[patientSpecialty[p] - 1], patientFinalAmount[p]);
+    }
+}
+
 void registerPatient() {
     int idx = patientCount;
     int specialtyIdx,wardIdx = -1, bedIdx = -1, i;
@@ -366,7 +397,7 @@ int main()
                 registerPatient();
                 break;
             case 3:
-                printf("\nPatient Priority Waiting Queue\n");
+                sortAndDisplayPriorityQueue();
                 break;
             case 4:
                 printf("\nAnalytics Report\n");
