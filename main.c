@@ -220,6 +220,64 @@ double calculateDiscount(int age, double grossTotal) {
     return 0.0;
 }
 
+void printBill(int idx) {
+    int specialtyIdx = patientSpecialty[idx] - 1;
+    int surchargePercent = (patientUrgency[idx] == 2) ? 20 : (patientUrgency[idx] == 3) ? 50 : 0;
+
+    printf("\n====================================================\n");
+    printf(" SMART HOSPITAL ADMISSION & BILL\n");
+    printf("----------------------------------------------------\n");
+    printf("Patient ID      : PAT-%d\n", 1000 + idx + 1);
+    printf("Patient Name    : %s\n", patientNames[idx]);
+    if (patientAges[idx] < 5 || patientAges[idx] > 65)
+        printf("Age             : %d Years (15%% Subsidy Eligible)\n", patientAges[idx]);
+    else
+        printf("Age             : %d Years\n", patientAges[idx]);
+    printf("Specialty       : %s\n", specialtyTitles[specialtyIdx]);
+
+    if (patientAdmitted[idx] == 1)
+        printf("Assigned Ward   : %s (Bed #%02d)\n", wardTitles[patientWard[idx] - 1], patientBed[idx]);
+    else
+        printf("Assigned Ward   : Outpatient (OPD)\n");
+
+    printf("Urgency Level   : Level %d (%s)\n", patientUrgency[idx], urgencyText(patientUrgency[idx]));
+    printf("----------------------------------------------------\n");
+    printf("Base Consultation Fee   : LKR %.2f\n", patientBaseFee[idx]);
+    printf("Emergency Surcharge     : LKR %.2f (%d%%)\n", patientSurcharge[idx], surchargePercent);
+    if (patientAdmitted[idx] == 1)
+        printf("Ward Stay Cost (%d Days) : LKR %.2f\n", patientDays[idx], patientWardCost[idx]);
+    else
+        printf("Ward Stay Cost          : LKR 0.00\n");
+    printf("----------------------------------------------------\n");
+    printf("Gross Total Bill        : LKR %.2f\n", patientGrossTotal[idx]);
+    printf("Age Subsidy Discount    : LKR -%.2f (%s)\n", patientDiscount[idx], patientDiscount[idx] > 0 ? "15%" : "0%");
+    printf("----------------------------------------------------\n");
+    printf("Final Payable Amount    : LKR %.2f\n", patientFinalAmount[idx]);
+    if (patientWaitTime[idx] == 0)
+        printf("Estimated Waiting Time  : 0.00 mins (Immediate Attention)\n");
+    else
+        printf("Estimated Waiting Time  : %.2f mins\n", patientWaitTime[idx]);
+    printf("====================================================\n");
+}
+
+void savePatientRecordToFile(int idx) {
+    FILE *fp = fopen("patient_records.txt", "a");
+    if (fp == NULL) {
+        printf("\nWarning: could not write to patient_records.txt\n");
+        return;
+    }
+    fprintf(fp, "PAT-%d | %s | Age:%d | Urgency:%s | Specialty:%s | Ward:%s | Days:%d | Final:LKR %.2f\n",
+            1000 + idx + 1,
+            patientNames[idx],
+            patientAges[idx],
+            urgencyText(patientUrgency[idx]),
+            specialtyTitles[patientSpecialty[idx] - 1],
+            patientAdmitted[idx] ? wardTitles[patientWard[idx] - 1] : "OPD",
+            patientDays[idx],
+            patientFinalAmount[idx]);
+    fclose(fp);
+}
+
 void registerPatient() {
     int idx = patientCount;
     int specialtyIdx,wardIdx = -1, bedIdx = -1, i;
@@ -281,6 +339,9 @@ void registerPatient() {
     patientFinalAmount[idx]= patientGrossTotal[idx] - patientDiscount[idx];
 
     patientCount++;
+    
+    printBill(idx);
+    savePatientRecordToFile(idx);
 }
 
 int main()
