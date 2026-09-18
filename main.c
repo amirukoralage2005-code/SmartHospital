@@ -309,6 +309,53 @@ void sortAndDisplayPriorityQueue() {
     }
 }
 
+void generateReport() {
+    int i, w;
+    int countByUrgency[4] = {0, 0, 0, 0};
+    double totalRevenue = 0.0, totalDiscount = 0.0;
+    int highestIdx = -1;
+    double highestAmount = -1.0;
+
+    if (patientCount == 0) {
+        printf("\nNo patients registered yet. Nothing to report.\n");
+        return;
+    }
+
+    for (i = 0; i < patientCount; i++) {
+        countByUrgency[patientUrgency[i]]++;
+        totalRevenue += patientFinalAmount[i];
+        totalDiscount += patientDiscount[i];
+        if (patientFinalAmount[i] > highestAmount) {
+            highestAmount = patientFinalAmount[i];
+            highestIdx = i;
+        }
+    }
+
+    printf("\n=============== PERFORMANCE & ANALYTICS REPORT ===============\n");
+    printf("Total Patients Registered : %d\n", patientCount);
+    printf("  Level 1 (Normal)   : %d\n", countByUrgency[1]);
+    printf("  Level 2 (Urgent)   : %d\n", countByUrgency[2]);
+    printf("  Level 3 (Critical) : %d\n", countByUrgency[3]);
+
+    printf("\nTotal Revenue Earned  : LKR %.2f\n", totalRevenue);
+    printf("Total Discounts Given : LKR %.2f\n", totalDiscount);
+
+    printf("\nBed Occupancy Percentage per Ward:\n");
+    for (w = 0; w < TOTAL_WARDS; w++) {
+        int occupied = 0, b;
+        for (b = 0; b < wardBedLimits[w]; b++)
+            if (bedOccupancy[w][b] == 1) occupied++;
+        printf("  %-25s : %.2f%% (%d/%d beds)\n",
+               wardTitles[w], (occupied * 100.0) / wardBedLimits[w], occupied, wardBedLimits[w]);
+    }
+
+    if (highestIdx != -1) {
+        printf("\nHighest-Paying Patient : %s (PAT-%d) - LKR %.2f\n",
+               patientNames[highestIdx], 1000 + highestIdx + 1, highestAmount);
+    }
+    printf("================================================================\n");
+}
+
 void registerPatient() {
     int idx = patientCount;
     int specialtyIdx,wardIdx = -1, bedIdx = -1, i;
@@ -400,7 +447,7 @@ int main()
                 sortAndDisplayPriorityQueue();
                 break;
             case 4:
-                printf("\nAnalytics Report\n");
+                generateReport();
                 break;
             case 5:
                 saveBedStatus();
